@@ -1,0 +1,25 @@
+{
+  "name": "js-drum-stick",
+  "version": "1.0.0",
+  "description": "Drum Stick App with TypeScript",
+  "main": "index.html",
+  "repository": "git@github.com:alayek/js-drum-stick.git",
+  "author": "alayek <5607371+alayek@users.noreply.github.com>",
+  "license": "MIT",
+  "scripts": {
+    "cp-asset": "mkdir -p dist/src/assets/ && cp src/assets/**.wav dist/src/assets",
+    "clean": "rm -rf dist/",
+    "prestart": "yarn clean",
+    "start": "parcel index.html --open",
+    "poststart": "yarn cp-asset",
+    "prebuild": "yarn clean",
+    "build": "parcel build index.html",
+    "postbuild": "yarn cp-asset"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "parcel-bundler": "^1.6.1",
+    "typescript": "^3.2.2"
+  },
+  "keywords": []
+}
