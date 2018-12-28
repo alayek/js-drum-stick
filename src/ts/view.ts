@@ -69,12 +69,11 @@ class View {
 
   /** Add audio and transitionend event listeners here */
   public addEventHandlers(): View {
-    const divsWithKeys: Array<HTMLDivElement> = this._template.findAllDivs();
-    if (divsWithKeys) {
-      divsWithKeys.forEach(div =>
-        div.addEventListener("transitionend", this._removeTransition.bind(this))
-      );
-    }
+    const containerDiv: HTMLDivElement = this._template.getContainerDiv();
+    containerDiv.addEventListener(
+      "transitionend",
+      this._removeTransition.bind(this)
+    );
     window.addEventListener("keydown", this._playSound.bind(this));
     return this;
   }

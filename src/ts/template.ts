@@ -80,6 +80,17 @@ class Template {
   }
 
   /**
+   * Return the parent container div
+   */
+  public getContainerDiv(): HTMLDivElement {
+    return (
+      (document.getElementsByClassName("keys")[0] as HTMLDivElement) ||
+      (document.querySelector(`div[data - ${this._randomKey}_key]`)
+        .parentElement as HTMLDivElement)
+    );
+  }
+
+  /**
    * Render a single key tile
    */
   private _keyTile(keyInfo: I.KeyInfo | undefined): string {
