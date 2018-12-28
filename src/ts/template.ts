@@ -1,13 +1,17 @@
 import * as I from "./types";
 
 class Template {
-  private randomKey: string;
+  private _randomKey: string;
+  private _audioElements: { keyCode: string; el: HTMLAudioElement }[];
+  private _tileElements: { keyCode: string; el: HTMLDivElement }[];
   constructor(randomKey: string | undefined) {
-    this.randomKey =
+    this._randomKey =
       randomKey.toLowerCase() ||
       Math.random()
         .toString(36)
         .substring(2, 9);
+    this._audioElements = [];
+    this._tileElements = [];
   }
 
   /**
@@ -15,9 +19,26 @@ class Template {
    * Find audio element in page
    */
   public findAudioElement(keyCode: string): HTMLAudioElement {
-    return document.querySelector(
-      `audio[data-${this.randomKey}_key="${keyCode}"]`
-    ) as HTMLAudioElement;
+    // to avoid querying DOM, we'll check cached values here
+    const entry = this._audioElements.find(x => x.keyCode === keyCode);
+    let cachedElement;
+    if (!entry) {
+      // query the DOM, populate the array
+      const el = document.querySelector(
+        `audio[data-${this._randomKey}_key="${keyCode}"]`
+      ) as HTMLAudioElement;
+      this._audioElements = [
+        ...this._audioElements,
+        {
+          keyCode,
+          el
+        }
+      ];
+      cachedElement = el;
+    } else {
+      cachedElement = entry.el;
+    }
+    return cachedElement;
   }
 
   /**
@@ -25,9 +46,26 @@ class Template {
    * Find div element in page
    */
   public findDivElement(keyCode: string): HTMLDivElement {
-    return document.querySelector(
-      `div[data-${this.randomKey}_key="${keyCode}"]`
-    ) as HTMLDivElement;
+    // to avoid querying DOM, we'll check cached values here
+    const entry = this._tileElements.find(x => x.keyCode === keyCode);
+    let cachedElement;
+    if (!entry) {
+      // query the DOM, populate the array
+      const el = document.querySelector(
+        `div[data-${this._randomKey}_key="${keyCode}"]`
+      ) as HTMLDivElement;
+      this._tileElements = [
+        ...this._tileElements,
+        {
+          keyCode,
+          el
+        }
+      ];
+      cachedElement = el;
+    } else {
+      cachedElement = entry.el;
+    }
+    return cachedElement;
   }
 
   /**
@@ -36,9 +74,8 @@ class Template {
    */
   public findAllDivs(): Array<HTMLDivElement> {
     const elements = document.querySelectorAll(".key");
-    return (Array.from(elements) as Array<HTMLDivElement>)
-    .filter(
-      keyDiv => keyDiv.dataset[`${this.randomKey}_key`]
+    return (Array.from(elements) as Array<HTMLDivElement>).filter(
+      keyDiv => keyDiv.dataset[`${this._randomKey}_key`]
     );
   }
 
@@ -48,7 +85,7 @@ class Template {
   private _keyTile(keyInfo: I.KeyInfo | undefined): string {
     if (keyInfo) {
       return `
-        <div data-${this.randomKey}_key="${keyInfo.keyCode}" class="key">
+        <div data-${this._randomKey}_key="${keyInfo.keyCode}" class="key">
           <kbd>${keyInfo.character}</kbd>
           <span class="sound">
           ${keyInfo.soundName}
@@ -68,9 +105,9 @@ class Template {
   private _audioLink(keyInfo: I.KeyInfo | undefined): string {
     if (keyInfo) {
       return `
-        <audio data-${this.randomKey}_key="${
+        <audio data-${this._randomKey}_key="${
         keyInfo.keyCode
-      }" src="src/assets/${keyInfo.soundName}.wav">
+      }" src="./src/assets/${keyInfo.soundName}.wav">
         </audio>
       `;
     }
